@@ -13282,7 +13282,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Administrador</span><span class="p">:</span>
@@ -13415,7 +13415,7 @@ FIN
         <span class="n">proceso</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buscar_proceso</span><span class="p">(</span><span class="n">PID</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">proceso</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">PID</span><span class="p">]</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">PID</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ordenar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="p">)</span>
     
@@ -13603,7 +13603,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Muestra los procesos creados en diferentes listas</span>
@@ -13624,9 +13624,31 @@ FIN
     
 <span class="c1"># Comienza la ejecución de los procesos</span>
 <span class="k">def</span> <span class="nf">simulacion_empieza_auto</span><span class="p">():</span>
-    <span class="n">administrador</span><span class="o">.</span><span class="n">set_tiempos</span><span class="p">(</span><span class="n">tiempo_max_var</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">tiempo_suspendido</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
-    <span class="n">administrador</span><span class="o">.</span><span class="n">ejecutar_proceso_auto</span><span class="p">()</span>
-    <span class="n">mostrar_procesos</span><span class="p">()</span>
+    <span class="c1"># Control ingreso de tipo de dato al tiempo maximo de procesamiento</span>
+    <span class="n">tiempo_max</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tiempo_max</span> <span class="o">=</span> <span class="n">tiempo_max_var</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">advertencias_errores</span><span class="p">(</span><span class="s2">&quot;E01&quot;</span><span class="p">,</span> <span class="s2">&quot;tiempo maximo de procesamiento&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="c1"># Control ingreso de tipo de dato al tiempo maximo de suspensión</span>
+    <span class="n">tiempo_sus</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tiempo_sus</span> <span class="o">=</span> <span class="n">tiempo_suspendido</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">advertencias_errores</span><span class="p">(</span><span class="s2">&quot;E01&quot;</span><span class="p">,</span> <span class="s2">&quot;tiempo maximo de suspendido&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="c1"># Advertencia si se mantiene el valor por defecto del tiempo máximo de procesamiento</span>
+    <span class="k">if</span> <span class="n">tiempo_max</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">advertencias_errores</span><span class="p">(</span><span class="s2">&quot;A01&quot;</span><span class="p">,</span> <span class="s2">&quot;tiempo máximo de procesamiento&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">administrador</span><span class="o">.</span><span class="n">set_tiempos</span><span class="p">(</span><span class="n">tiempo_max</span><span class="p">,</span> <span class="n">tiempo_sus</span><span class="p">)</span>
+        <span class="n">administrador</span><span class="o">.</span><span class="n">ejecutar_proceso_auto</span><span class="p">()</span>
+        <span class="n">mostrar_procesos</span><span class="p">()</span>
 
 <span class="c1"># Comienza la ejecución de los procesos</span>
 <span class="k">def</span> <span class="nf">simulacion_empieza</span><span class="p">():</span>  
@@ -13799,7 +13821,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Creación del GUI</span>
