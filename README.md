@@ -16,5 +16,5 @@ Puedes encontrar todo el código fuente documentado [aqui](https://thesteppenwol
 
 # Listado de Advertencias y Errores
 
-Puedes encontrar un listado de las advertencias y errores que pueden aparecer al usar el aplicativo [aqui](https://github.com/TheSteppenwolf/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/blob/main/advertencias%20y%20errores.md)
+Puedes encontrar un listado de las advertencias y errores que pueden aparecer al usar el aplicativo [aqui](https://thesteppenwolf.github.io/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/advertencias%20y%20errores.md)
 
