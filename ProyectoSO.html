@@ -13222,6 +13222,8 @@ FIN
 <span class="sd">            - tiempo de ejecución -&gt; El tiempo de procesamiento del proceso.</span>
 <span class="sd">            - tiempo restante de ejecución -&gt; El tiempo restanto por procesar del proceso. (Causado por posible suspensión del mismo)</span>
 <span class="sd">            - prioridad -&gt; La prioridad del proceso. (Se asume que 0 es la prioridad más alta)</span>
+<span class="sd">            - PID -&gt; Identificador del proceso</span>
+<span class="sd">            - estado -&gt; Es el estado en el que se encuentra actualmente el proceso dado por un número</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
     <span class="c1"># Contructor del proceso.    </span>
@@ -13282,19 +13284,41 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Administrador</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    La clase administrador contiene todas las funciones que se requieren para interactuar con los procesos tales como:</span>
+<span class="sd">    La clase administrador contiene todas los métodos que se requieren para interactuar con los procesos tales como:</span>
 <span class="sd">        - Crear proceso -&gt; Crea un proceso nuevo.</span>
-<span class="sd">        - Ejecutar Procesos -&gt; Comienza el procesamiento de todos los procesos.</span>
+<span class="sd">        - Ejecutar Procesos -&gt; Comienza el procesamiento de todos los procesos con fin de suspension manual.</span>
+<span class="sd">        - ejecutar proceso auto -&gt; Comienza el procesamiento de todos los procesos con fin de suspension automática.</span>
 <span class="sd">        - Renudar -&gt; Reanuda un proceso suspendido</span>
 <span class="sd">        - Matar Proceso -&gt; Finaliza un proceso en ejecución</span>
-<span class="sd">        - Ver lista de todos los procesos</span>
-<span class="sd">        - Ver lista de los procesos preparados</span>
-<span class="sd">        - Ver lista de los procesos suspendidos</span>
+<span class="sd">        - Ver lista de todos los procesos -&gt; Devuelve la lista de todos los procesos</span>
+<span class="sd">        - Ver lista de los procesos preparados -&gt; Devuelve la lista de los procesos preparados</span>
+<span class="sd">        - Ver lista de los procesos suspendidos -&gt; Devuelve la lista de los procesos suspendidos</span>
+<span class="sd">        - to_preparado -&gt; Permite la migración de los procesos recien creados a estar preparados.</span>
+<span class="sd">        - ver_terminados -&gt; Devuelve la lista de los procesos terminados</span>
+<span class="sd">        - salir -&gt; funciona como un Garbage Collector</span>
+<span class="sd">        - buscar_proceso -&gt; busca un proceso dado el PID del mismo</span>
+<span class="sd">        - eliminar_proceso_lista -&gt; elimina un proceso de una lista dado el PID del mismo</span>
+<span class="sd">        - eliminar_proceso -&gt; elimina un proceso recientemente ingresado</span>
+<span class="sd">        - vaciar -&gt; vacia la lista de procesos terminados</span>
+<span class="sd">        - ordenar -&gt; ordena una lista dado un código tanto por prioridad como por PID</span>
+<span class="sd">        - evaluar_salida -&gt; reestablece el valor del PID cuando un proceso finaliza</span>
+<span class="sd">        - set_tiempos -&gt; establecen los tiempos tanto para el tiempo máximo de procesamiento como para el tiempo de suspendido máximo.</span>
+<span class="sd">        </span>
+<span class="sd">    Por otra parte, sus atributos son:</span>
+<span class="sd">        - procesos_todos -&gt; una lista con todos los procesos menos los finalizados</span>
+<span class="sd">        - procesos_preparados -&gt; una lista con todos los procesos preparados</span>
+<span class="sd">        - procesos_suspendidos -&gt; una lista con todos los procesos suspendidos</span>
+<span class="sd">        - procesos_terminados -&gt; una lista con todos los procesos terminados</span>
+<span class="sd">        - PID -&gt; identificador de cuantos procesos existen en el programa sin haber finalizado</span>
+<span class="sd">        - tiempo_max -&gt; tiempo máximo de ejecución del aplicativo</span>
+<span class="sd">        - tiempo_restante -&gt; tiempo restante del máximo de ejecucion del aplicativo</span>
+<span class="sd">        - tiempo_suspendido -&gt; tiempo máximo de suspensión de un proceso</span>
+<span class="sd">        - tiempo_suspendido_restante -&gt; tiempo restante del máximo de suspensión de un proceso</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c1"># Constructor</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -13310,13 +13334,7 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># Tiempos de suspensión máximo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="mi">0</span>
-        
-    <span class="k">def</span> <span class="nf">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiempo_max</span><span class="p">,</span> <span class="n">tiempo_suspendido</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="n">tiempo_max</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="n">tiempo_suspendido</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="mi">0</span>            
     
     <span class="c1"># Crea un proceso y lo agrega a la lista de todos los procesos</span>
     <span class="k">def</span> <span class="nf">crear_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">tiempo_ejecucion</span><span class="p">,</span> <span class="n">prioridad</span><span class="p">):</span>
@@ -13324,7 +13342,7 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">+=</span> <span class="mi">1</span>            
         
-    <span class="c1"># Inicia la ejecución de los procesos</span>
+    <span class="c1"># Inicia la ejecución de los procesos con fin de suspendido automatico</span>
     <span class="k">def</span> <span class="nf">ejecutar_proceso_auto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Mueve todos los procesos a preparado si se encuentran en la lista inicial</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
@@ -13338,8 +13356,7 @@ FIN
                     <span class="bp">self</span><span class="o">.</span><span class="n">reanudar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">break</span>
-                
+                    <span class="k">break</span>                
             <span class="c1"># Se muestra le proceso en ejecucion en el GUI</span>
             <span class="n">mostrar_proceso</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_nombre</span><span class="p">())</span>
             <span class="c1"># Se ejecuta el proceso</span>
@@ -13368,7 +13385,7 @@ FIN
                 <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_tiempo_restante</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span><span class="p">,</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">())</span>   
             
-    <span class="c1"># Inicia la ejecución de los procesos</span>
+    <span class="c1"># Inicia la ejecución de los procesos con fin de suspensión manual</span>
     <span class="k">def</span> <span class="nf">ejecutar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Mueve todos los procesos a preparado si se encuentran en la lista inicial</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
@@ -13422,11 +13439,17 @@ FIN
     <span class="c1"># Finaliza un proceso dado su PID</span>
     <span class="k">def</span> <span class="nf">matar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PID</span><span class="p">,</span> <span class="n">nivel</span><span class="p">):</span>
         <span class="n">proceso_ejecucion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buscar_proceso</span><span class="p">(</span><span class="n">PID</span><span class="p">,</span> <span class="n">nivel</span><span class="p">)</span>
-        <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>        
+        <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">,</span> <span class="n">nivel</span><span class="p">)</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluar_salida</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluar_salida</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
+        
+        <span class="c1">#proceso_ejecucion = self.buscar_proceso(PID, nivel)</span>
+        <span class="c1">#proceso_ejecucion.set_estado(3)        </span>
+        <span class="c1">#self.procesos_terminados.append(proceso_ejecucion)</span>
+        <span class="c1">#self.eliminar_proceso_lista(proceso_ejecucion, nivel)        </span>
+        <span class="c1">#self.eliminar_proceso_lista(proceso_ejecucion)</span>
+        <span class="c1">#self.evaluar_salida(PID)</span>
     
     <span class="c1"># Devuelve la lista de todos los procesos</span>
     <span class="k">def</span> <span class="nf">ver_lista</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -13451,6 +13474,7 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span> <span class="o">=</span> <span class="p">[]</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span> <span class="o">=</span> <span class="p">[]</span> 
                 
+    <span class="c1"># Función que localiza el proceso con mayor prioridad</span>
     <span class="k">def</span> <span class="nf">buscar_prioridad_mayor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Se debe tener en cuenta que se asume que la prioridad máxima es 0</span>
@@ -13542,14 +13566,22 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_PID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PID</span><span class="p">):</span>            
             <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">PID</span><span class="p">:</span>                
-                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">set_PID</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">set_PID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">get_estado</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">get_estado</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>       
+                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>      
+                
+    <span class="k">def</span> <span class="nf">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiempo_max</span><span class="p">,</span> <span class="n">tiempo_suspendido</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="n">tiempo_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="n">tiempo_suspendido</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span>
 </pre></div>
 
     </div>
@@ -13603,15 +13635,15 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Muestra los procesos creados en diferentes listas</span>
 <span class="k">def</span> <span class="nf">mostrar_procesos</span><span class="p">():</span>
+    <span class="n">administrador</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
     <span class="n">procesos_lst</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
     <span class="n">procesos_lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">administrador</span><span class="o">.</span><span class="n">ver_lista</span><span class="p">())</span>
-    <span class="n">preparado_lst</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
-    <span class="n">administrador</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
+    <span class="n">preparado_lst</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>    
     <span class="n">preparado_lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">administrador</span><span class="o">.</span><span class="n">ver_preparados</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">suspendido_lst</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
     <span class="n">suspendido_lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">administrador</span><span class="o">.</span><span class="n">ver_suspendidos</span><span class="p">())</span>    
@@ -13821,7 +13853,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Creación del GUI</span>
