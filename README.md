@@ -14,3 +14,7 @@ Los integrantes que realizaron el proyecto fueron:
 
 Puedes encontrar todo el código fuente documentado [aqui](https://thesteppenwolf.github.io/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/ProyectoSO.html)
 
+# Listado de Advertencias y Errores
+
+Puedes encontrar un listado de las advertencias y errores que pueden aparecer al usar el aplicativo [aqui](https://github.com/TheSteppenwolf/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/blob/main/advertencias%20y%20errores.md)
+
