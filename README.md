@@ -22,6 +22,10 @@ Tecnologías de la información
 
 Cuarto semestre
 
+### Lenguaje utilizado para el desarrollo del proyecto
+
+Python
+
 # Código fuente documentado
 
 Puedes encontrar todo el código fuente documentado [aqui](https://thesteppenwolf.github.io/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/ProyectoSO.html)
