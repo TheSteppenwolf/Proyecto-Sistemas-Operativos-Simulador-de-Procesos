@@ -13077,7 +13077,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Protecto-de-Sistemas-Operativos">Protecto de Sistemas Operativos<a class="anchor-link" href="#Protecto-de-Sistemas-Operativos">&#182;</a></h1><p>Integrantes:</p>
+<h1 id="Proyecto-de-Sistemas-Operativos">Proyecto de Sistemas Operativos<a class="anchor-link" href="#Proyecto-de-Sistemas-Operativos">&#182;</a></h1><p>Integrantes:</p>
 <ul>
 <li>Bryan Cuvi</li>
 <li>Sebastián Tamayo</li>
@@ -13090,7 +13090,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Control-de-procesos">Control de procesos<a class="anchor-link" href="#Control-de-procesos">&#182;</a></h1><p>La idea es realizar un simulador que controle procesos como lo haria un sistema operativo tomando en cuenta los tiempos de ejecución y prioridad de los procesos, además, se debe tener presente el uso de tres listas:</p>
+<h1 id="Simulador-de-procesos">Simulador de procesos<a class="anchor-link" href="#Simulador-de-procesos">&#182;</a></h1><p>La idea es realizar un simulador que controle procesos como lo haria un sistema operativo tomando en cuenta los tiempos de ejecución y prioridad de los procesos, además, se debe tener presente el uso de tres listas:</p>
 <ul>
 <li>Lista todos los procesos (Ordenado por el orden de llegada).</li>
 <li>Lista suspendidos (Ordenado por el orden de prioridad).</li>
@@ -13146,6 +13146,7 @@ FIN
 <span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">scrolledtext</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>
 </pre></div>
 
     </div>
@@ -13163,11 +13164,13 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[72]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Valores globales para el control de estados de los procesos</span>
 <span class="n">estados</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Inicializandose&quot;</span><span class="p">,</span> <span class="s2">&quot;Preparado&quot;</span><span class="p">,</span> <span class="s2">&quot;Suspendido&quot;</span><span class="p">,</span> <span class="s2">&quot;Terminado&quot;</span><span class="p">]</span>
+<span class="c1"># Valor que verifica si la simulación se esta ejecutando o no</span>
+<span class="n">simulacion_on</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 
     </div>
@@ -13185,7 +13188,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Proceso</span><span class="p">:</span>
@@ -13255,7 +13258,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="prompt input_prompt">In&nbsp;[77]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Administrador</span><span class="p">:</span>
@@ -13279,12 +13282,17 @@ FIN
         <span class="c1"># Se refiere al código que tendrá cada proceso</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">=</span> <span class="mi">0</span>      
         <span class="c1"># Tiempos de procesamiento</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Tiempos de suspensión máximo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="mi">0</span>
         
-    <span class="k">def</span> <span class="nf">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiempo_max</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">tiempo_max</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiempo_max</span><span class="p">,</span> <span class="n">tiempo_suspendido</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span> <span class="o">=</span> <span class="n">tiempo_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="n">tiempo_suspendido</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span>
     
     <span class="c1"># Crea un proceso y lo agrega a la lista de todos los procesos</span>
     <span class="k">def</span> <span class="nf">crear_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">tiempo_ejecucion</span><span class="p">,</span> <span class="n">prioridad</span><span class="p">):</span>
@@ -13293,32 +13301,84 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">+=</span> <span class="mi">1</span>            
         
     <span class="c1"># Inicia la ejecución de los procesos</span>
-    <span class="k">def</span> <span class="nf">ejecutar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ejecutar_proceso_auto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Mueve todos los procesos a preparado si se encuentran en la lista inicial</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
+        <span class="c1"># Comienza la ejecución de todos los procesos</span>
+        <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Se toma el proceso con prioridad más alta</span>
+                <span class="n">proceso_ejecucion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reanudar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+                
+            <span class="c1"># Se muestra le proceso en ejecucion en el GUI</span>
+            <span class="n">mostrar_proceso</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_nombre</span><span class="p">())</span>
+            <span class="c1"># Se ejecuta el proceso</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># Si el tiempo de suspendido llega a 0 y existe un proceso suspendido, se procede a enviarlo a preparado</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">reanudar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_suspendido</span>
+                <span class="c1"># Si el tiempo de ejecución por proceso máximo termina y el proceso aún no, procede a suspenderse</span>
+                <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span>
+                    <span class="k">break</span>
+                <span class="c1"># Si el proceso termina sin que el proceso de ejecución máximo termine, el proceso termina</span>
+                <span class="k">elif</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>                    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>                    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">evaluar_salida</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
+                    <span class="k">break</span>
+                <span class="c1"># Se aumenta un contador al tiempo</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_tiempo_restante</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span><span class="p">,</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">())</span>           
+            <span class="n">mostrar_procesos</span><span class="p">()</span>    
+            
+    <span class="c1"># Inicia la ejecución de los procesos</span>
+    <span class="k">def</span> <span class="nf">ejecutar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Mueve todos los procesos a preparado si se encuentran en la lista inicial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_preparado</span><span class="p">()</span>
+        <span class="c1"># Comienza la ejecución de todos los procesos</span>
         <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># Se toma el proceso con prioridad más alta</span>
                 <span class="n">proceso_ejecucion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">break</span>
+                
             <span class="c1"># Se muestra le proceso en ejecucion en el GUI</span>
             <span class="n">mostrar_proceso</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_nombre</span><span class="p">())</span>
             <span class="c1"># Se ejecuta el proceso</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># Si el tiempo de ejecución por proceso máximo termina y el proceso aún no, procede a suspenderse</span>
                 <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                     <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_max</span>
                     <span class="k">break</span>
+                <span class="c1"># Si el proceso termina sin que el proceso de ejecución máximo termine, el proceso termina</span>
                 <span class="k">elif</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">evaluar_salida</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
                     <span class="k">break</span>
+                <span class="c1"># Se aumenta un contador al tiempo</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span> <span class="o">-=</span> <span class="mi">1</span>
                 <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_tiempo_restante</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span><span class="p">,</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">())</span>
-            <span class="n">mostrar_procesos</span><span class="p">()</span>            
+                <span class="n">set_tiempos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiempo_restante</span><span class="p">,</span> <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_tiempo_restante</span><span class="p">())</span>           
+            <span class="n">mostrar_procesos</span><span class="p">()</span>    
             
     <span class="k">def</span> <span class="nf">to_preparado</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">:</span>
@@ -13336,10 +13396,16 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">PID</span><span class="p">]</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ordenar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="p">)</span>
     
     <span class="c1"># Finaliza un proceso dado su PID</span>
-    <span class="k">def</span> <span class="nf">matar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PID</span><span class="p">):</span>
-        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">matar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PID</span><span class="p">,</span> <span class="n">nivel</span><span class="p">):</span>
+        <span class="n">proceso_ejecucion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buscar_proceso</span><span class="p">(</span><span class="n">PID</span><span class="p">,</span> <span class="n">nivel</span><span class="p">)</span>
+        <span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">set_estado</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">,</span> <span class="n">nivel</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluar_salida</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="o">.</span><span class="n">get_PID</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eliminar_proceso_lista</span><span class="p">(</span><span class="n">proceso_ejecucion</span><span class="p">)</span>
     
     <span class="c1"># Devuelve la lista de todos los procesos</span>
     <span class="k">def</span> <span class="nf">ver_lista</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -13413,6 +13479,7 @@ FIN
             
     <span class="k">def</span> <span class="nf">eliminar_proceso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PID</span><span class="p">):</span>
         <span class="n">val</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">get_PID</span><span class="p">()</span> <span class="o">==</span> <span class="n">PID</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -13432,13 +13499,37 @@ FIN
         <span class="bp">self</span><span class="o">.</span><span class="n">procesos_terminados</span><span class="o">=</span><span class="p">[]</span>
         
     <span class="c1"># Ordena una lista por la prioridad</span>
-    <span class="k">def</span> <span class="nf">ordenar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lista</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">)):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">[</span><span class="mi">1</span><span class="p">:])):</span>
-                <span class="k">if</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_prioridad</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_prioridad</span><span class="p">():</span>
-                    <span class="n">temp</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                    <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                    <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>   
+    <span class="k">def</span> <span class="nf">ordenar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lista</span><span class="p">,</span> <span class="n">orden</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Ordenar por prioridad mayor a menor (mayor == 0)</span>
+        <span class="k">if</span> <span class="n">orden</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">[</span><span class="mi">1</span><span class="p">:])):</span>
+                    <span class="k">if</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_prioridad</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_prioridad</span><span class="p">():</span>
+                        <span class="n">temp</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                        <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>   
+        <span class="c1"># ORdenar por PID menor a mayor (menor == 0)</span>
+        <span class="k">elif</span> <span class="n">orden</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">[</span><span class="mi">1</span><span class="p">:])):</span>
+                    <span class="k">if</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_PID</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_PID</span><span class="p">():</span>
+                        <span class="n">temp</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">lista</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                        <span class="n">lista</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+                    
+    <span class="k">def</span> <span class="nf">evaluar_salida</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PID</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PID</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PID</span><span class="p">):</span>            
+            <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">PID</span><span class="p">:</span>                
+                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">set_PID</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">procesos_todos</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">get_estado</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_preparados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">get_estado</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">procesos_suspendidos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                          
+        <span class="n">mostrar_procesos</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -13453,6 +13544,32 @@ FIN
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Funciones-avanzadas-para-los-menus">Funciones avanzadas para los menus<a class="anchor-link" href="#Funciones-avanzadas-para-los-menus">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conocer_mas</span><span class="p">():</span>
+    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;https://thesteppenwolf.github.io/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">autoraise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+<span class="k">def</span> <span class="nf">salir</span><span class="p">():</span>
+    <span class="n">administrador</span><span class="o">.</span><span class="n">salir</span><span class="p">()</span>
+    <span class="k">global</span> <span class="n">window</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13482,15 +13599,20 @@ FIN
     <span class="n">mostrar_procesos</span><span class="p">()</span>
     
 <span class="c1"># Comienza la ejecución de los procesos</span>
+<span class="k">def</span> <span class="nf">simulacion_empieza_auto</span><span class="p">():</span>
+    <span class="n">administrador</span><span class="o">.</span><span class="n">set_tiempos</span><span class="p">(</span><span class="n">tiempo_max_var</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">tiempo_suspendido</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="n">administrador</span><span class="o">.</span><span class="n">ejecutar_proceso_auto</span><span class="p">()</span>
+
+<span class="c1"># Comienza la ejecución de los procesos</span>
 <span class="k">def</span> <span class="nf">simulacion_empieza</span><span class="p">():</span>
-    <span class="n">administrador</span><span class="o">.</span><span class="n">set_tiempos</span><span class="p">(</span><span class="n">tiempo_max_var</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="n">administrador</span><span class="o">.</span><span class="n">set_tiempos</span><span class="p">(</span><span class="n">tiempo_max_var</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">tiempo_suspendido</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
     <span class="n">administrador</span><span class="o">.</span><span class="n">ejecutar_proceso</span><span class="p">()</span>
 
 <span class="c1"># Establece el nuevo tiempo restante</span>
 <span class="k">def</span> <span class="nf">set_tiempos</span><span class="p">(</span><span class="n">tiempo_total</span><span class="p">,</span> <span class="n">tiempo_proceso</span><span class="p">):</span>
     <span class="n">tiempo_ejecucion_txt2</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
     <span class="n">tiempo_ejecucion_txt2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">tiempo_total</span><span class="p">)</span>
-    <span class="n">proceso_tiempo_txt</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
+    <span class="n">proceso_tiempo_txt</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>    
     <span class="n">proceso_tiempo_txt</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">tiempo_proceso</span><span class="p">)</span>
     
 <span class="c1"># Reanuda una tarea suspendida</span>
@@ -13498,7 +13620,13 @@ FIN
     <span class="n">administrador</span><span class="o">.</span><span class="n">reanudar</span><span class="p">((</span><span class="nb">int</span><span class="p">)(</span><span class="n">suspendido_lst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suspendido_lst</span><span class="o">.</span><span class="n">curselection</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="n">mostrar_procesos</span><span class="p">()</span>
     
-    
+<span class="c1"># Finaliza un proceso</span>
+<span class="k">def</span> <span class="nf">finalizar</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">suspendido_lst</span><span class="o">.</span><span class="n">curselection</span><span class="p">():</span>
+        <span class="n">administrador</span><span class="o">.</span><span class="n">matar_proceso</span><span class="p">((</span><span class="nb">int</span><span class="p">)(</span><span class="n">suspendido_lst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suspendido_lst</span><span class="o">.</span><span class="n">curselection</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">preparado_lst</span><span class="o">.</span><span class="n">curselection</span><span class="p">():</span>
+        <span class="n">administrador</span><span class="o">.</span><span class="n">matar_proceso</span><span class="p">((</span><span class="nb">int</span><span class="p">)(</span><span class="n">preparado_lst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">preparado_lst</span><span class="o">.</span><span class="n">curselection</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">mostrar_procesos</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -13515,7 +13643,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Función que agrega un nuevo proceso a partir del botón agregar de la subventana avanzado</span>
@@ -13573,7 +13701,7 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[76]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Creación del menu del aplicativo</span>
@@ -13582,15 +13710,15 @@ FIN
     <span class="n">window</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menubar</span><span class="p">)</span>
 
     <span class="n">filemenu</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Iniciar simulación&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza</span><span class="p">)</span>
-    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detener simulación&quot;</span><span class="p">)</span>
+    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Iniciar simulación con reanudación automática&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza_auto</span><span class="p">)</span>
+    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Iniciar simulación con reanudación manual&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza</span><span class="p">)</span>
     <span class="n">filemenu</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>
-    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Salir&quot;</span><span class="p">)</span>
+    <span class="n">filemenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Salir&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">salir</span><span class="p">)</span>
 
     <span class="n">helpmenu</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">helpmenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Ayuda&quot;</span><span class="p">)</span>
     <span class="n">helpmenu</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>
-    <span class="n">helpmenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Acerca de...&quot;</span><span class="p">)</span>
+    <span class="n">helpmenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Acerca de...&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">conocer_mas</span><span class="p">)</span>
 
     <span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Archivo&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">filemenu</span><span class="p">)</span>
     <span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Ayuda&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">helpmenu</span><span class="p">)</span>
@@ -13603,12 +13731,12 @@ FIN
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[85]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Creación del GUI</span>
 <span class="n">window</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">()</span>
-<span class="n">window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Simulador&quot;</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Simulador de Procesos&quot;</span><span class="p">)</span>
 <span class="n">window</span><span class="o">.</span><span class="n">resizable</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># Variables que almacenan los datos ingresados para los procesos</span>
@@ -13616,6 +13744,7 @@ FIN
 <span class="n">tiempo_ejecucion_entry</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">IntVar</span><span class="p">()</span>
 <span class="n">prioridad_entry</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">IntVar</span><span class="p">()</span>
 <span class="n">tiempo_max_var</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">IntVar</span><span class="p">()</span>
+<span class="n">tiempo_suspendido</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">IntVar</span><span class="p">()</span>
 
 <span class="c1"># Se inicializa el administrador general</span>
 <span class="n">administrador</span> <span class="o">=</span> <span class="n">Administrador</span><span class="p">()</span>
@@ -13645,10 +13774,12 @@ FIN
 <span class="n">preparado_txt</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preparado&quot;</span><span class="p">)</span>
 <span class="n">preparado_lst</span> <span class="o">=</span> <span class="n">Listbox</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;55&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s2">&quot;20&quot;</span><span class="p">)</span>
 <span class="n">suspendido_txt</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Suspendido&quot;</span><span class="p">)</span>
+<span class="n">suspendido_tiempo_lb</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Tiempo suspendido:&quot;</span><span class="p">)</span>
+<span class="n">suspendido_tiempo_txt</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="n">tiempo_suspendido</span><span class="p">)</span>
 <span class="n">suspendido_lst</span> <span class="o">=</span> <span class="n">Listbox</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;55&quot;</span><span class="p">)</span>
-<span class="n">empezar_simulacion</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Empezar simulación&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza</span><span class="p">)</span>
-<span class="n">detener_simulacion</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Detener simulación&quot;</span><span class="p">)</span>
-<span class="n">finalizar_tarea</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Finalizar tarea&quot;</span><span class="p">)</span>
+<span class="n">empezar_simulacion</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Simulación automática&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza_auto</span><span class="p">)</span>
+<span class="n">detener_simulacion</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Simulación manual&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">simulacion_empieza</span><span class="p">)</span>
+<span class="n">finalizar_tarea</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Finalizar tarea&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">finalizar</span><span class="p">)</span>
 <span class="n">reanudar_tarea</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">procesos_tab</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Reanudar tarea&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">reanudar</span><span class="p">)</span>
 
 <span class="c1"># Ubicación de los elementos de la subventana procesos</span>
@@ -13665,6 +13796,8 @@ FIN
 <span class="n">preparado_txt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
 <span class="n">preparado_lst</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">suspendido_txt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
+<span class="n">suspendido_tiempo_lb</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
+<span class="n">suspendido_tiempo_txt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
 <span class="n">suspendido_lst</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">empezar_simulacion</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
 <span class="n">detener_simulacion</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -13702,6 +13835,7 @@ FIN
 <span class="n">texto_lb</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">procesos_acabados_lst</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
 <span class="n">vaciar_acabados_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
+
 
 <span class="c1"># Using pack to make the control visible inside the GUI</span>
 <span class="n">tabControl</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
