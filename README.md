@@ -10,6 +10,18 @@ Los integrantes que realizaron el proyecto fueron:
 - Sofía Villacís
 - Sebastián Tamayo
 
+### Universidad
+
+Pontificia Universidad Católica del Ecuador
+
+### Carrera
+
+Tecnologías de la información
+
+#### Semestre
+
+Cuarto semestre
+
 # Código fuente documentado
 
 Puedes encontrar todo el código fuente documentado [aqui](https://thesteppenwolf.github.io/Proyecto-Sistemas-Operativos-Simulador-de-Procesos/ProyectoSO.html)
