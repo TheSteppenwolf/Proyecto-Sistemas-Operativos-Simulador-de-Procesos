@@ -18,7 +18,7 @@ Pontificia Universidad Católica del Ecuador
 
 Tecnologías de la información
 
-#### Semestre
+### Semestre
 
 Cuarto semestre
 
