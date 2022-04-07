@@ -1,6 +1,6 @@
 ## Proyecto de Sistemas Operativos - Simulador de Procesos
 
-Bienvenidos, el presente proyecto de la matería de Sistemas Operativos tiene el objetivo de presentar un Simulador de Procesos de un sistema operativo.
+Bienvenidos, el presente proyecto de la materia de Sistemas Operativos tiene el objetivo de presentar un Simulador de Procesos de un sistema operativo.
 
 ### Integrantes
 
